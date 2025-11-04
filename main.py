@@ -305,11 +305,11 @@ class ImGuiApp:
 
         # 显示渲染设置面板
         if self.show_render_settings:
-            self.show_render_settings = show_render_settings_panel()
+            self.show_render_settings = show_render_settings_panel(self.show_render_settings)
 
         # 显示属性面板
         if self.show_property_panel:
-            self.show_property_panel = show_property_panel()
+            self.show_property_panel = show_property_panel(self.show_property_panel)
 
         # 恢复字体
         if self.font:
@@ -319,7 +319,7 @@ class ImGuiApp:
 def main():
     """主函数"""
     app = ImGuiApp()
-    run_imgui_app(app.gui, "Pulse - Migrated")
+    run_imgui_app(app.gui, "Pulse")
 
 
 if __name__ == "__main__":

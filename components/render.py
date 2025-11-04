@@ -30,7 +30,7 @@ render_settings = {
 }
 
 
-def show_render_settings_panel():
+def show_render_settings_panel(open: bool) -> bool:
     """显示渲染设置面板"""
     # 设置可停靠
     imgui.set_next_window_dock_id(imgui.get_id("DockSpace"), imgui.Cond_.first_use_ever)

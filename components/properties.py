@@ -72,8 +72,8 @@ def select_object(obj_type, obj_name):
         selected_object["properties"] = {}
 
 
-def show_property_panel():
-    """显示属性面板"""
+def show_property_panel(open: bool) -> bool:
+    """显示属性面板 """
     # 设置可停靠
     imgui.set_next_window_dock_id(imgui.get_id("DockSpace"), imgui.Cond_.first_use_ever)
 
@@ -81,7 +81,8 @@ def show_property_panel():
     imgui.set_next_window_size(imgui.ImVec2(400, 600), imgui.Cond_.first_use_ever)
 
     keep_open = True
-    window_open = imgui.begin("属性面板", True)
+    window_open = imgui.begin("属性面板", open)[1]
+    print( "Property Panel Open:", window_open )
 
     if window_open:
         # 根据选中的对象类型显示不同的属性面板
