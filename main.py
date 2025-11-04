@@ -5,6 +5,7 @@
 
 from imgui_bundle import imgui, immapp
 import sys
+from components import setup_dock_space, show_all_panels
 
 class ImGuiApp:
     def __init__(self):
@@ -129,68 +130,6 @@ class ImGuiApp:
                 self.show_about = False
             imgui.end()
 
-    def setup_dock_space(self):
-        """设置dock space"""
-        # 获取视口大小
-        viewport = imgui.get_main_viewport()
-        imgui.set_next_window_pos(viewport.work_pos)
-        imgui.set_next_window_size(viewport.work_size)
-        
-        # 创建dock space窗口 - 移除no_docking标志
-        window_flags = (imgui.WindowFlags_.no_title_bar |
-                        imgui.WindowFlags_.no_collapse |
-                        imgui.WindowFlags_.no_resize |
-                        imgui.WindowFlags_.no_move |
-                        imgui.WindowFlags_.no_bring_to_front_on_focus |
-                        imgui.WindowFlags_.no_nav_focus)
-
-        imgui.push_style_var(imgui.StyleVar_.window_padding, imgui.ImVec2(0.0, 0.0))
-        imgui.begin("DockSpace", True, window_flags)
-        imgui.pop_style_var()
-
-        # 提交dock space
-        dockspace_id = imgui.get_id("DockSpace")
-        imgui.dock_space(dockspace_id, imgui.ImVec2(0.0, 0.0))
-
-        imgui.end()
-
-    def show_panels(self):
-        """显示各种面板"""
-        # 状态面板 - 设置可停靠
-        imgui.set_next_window_dock_id(imgui.get_id("MyDockSpace"), imgui.Cond_.first_use_ever)
-        imgui.begin("状态面板")
-        imgui.text(f"当前文件: {self.file_path if self.file_path else '未加载'}")
-        imgui.text(f"录制状态: {'正在录制' if self.recording else '未录制'}")
-        imgui.text(f"渲染预览: {'开启' if self.render_preview else '关闭'}")
-        imgui.end()
-
-        # 控制面板 - 设置可停靠
-        imgui.set_next_window_dock_id(imgui.get_id("MyDockSpace"), imgui.Cond_.first_use_ever)
-        imgui.begin("控制面板")
-        imgui.text("欢迎使用ImGui Bundle应用程序！")
-        imgui.text("您可以使用顶部菜单栏来访问各种功能。")
-
-        imgui.separator()
-        imgui.text("示例控件:")
-
-        # 示例按钮
-        if imgui.button("测试按钮"):
-            print("测试按钮被点击!")
-
-        imgui.same_line()
-
-        # 示例复选框
-        _, self.recording = imgui.checkbox("录制", self.recording)
-        imgui.end()
-
-        # 信息面板 - 设置可停靠
-        imgui.set_next_window_dock_id(imgui.get_id("MyDockSpace"), imgui.Cond_.first_use_ever)
-        imgui.begin("信息面板")
-        imgui.text("应用程序信息:")
-        imgui.text("- 基于imgui-bundle")
-        imgui.text("- 支持dock space")
-        imgui.text("- 可停靠面板")
-        imgui.end()
 
     # 菜单功能实现
     def save_file(self):
@@ -269,8 +208,8 @@ class ImGuiApp:
 
         # 创建界面
         self.create_menu_bar()
-        self.setup_dock_space()
-        self.show_panels()
+        setup_dock_space()
+        self.recording = show_all_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
 
         # 恢复字体
