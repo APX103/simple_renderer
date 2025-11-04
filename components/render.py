@@ -5,6 +5,30 @@
 
 from imgui_bundle import imgui
 
+# 渲染设置状态变量
+render_settings = {
+    # 基本信息
+    "resolution_width": 1280,
+    "resolution_height": 720,
+    "renderer_type": "rasterizer",
+
+    # 光栅化渲染设置
+    "antialiasing": "OFF",
+    "color_type": "texture",
+    "antialiasing2": "OFF",
+    "ray_tracing_enabled": False,
+    "ambient_occlusion_enabled": False,
+
+    # 路径追踪渲染设置
+    "samples": 64,
+    "max_depth": 8,
+    "russian_roulette": True,
+
+    # 光线追踪渲染设置
+    "reflection_depth": 4,
+    "shadow_quality": "High"
+}
+
 
 def show_render_settings_panel():
     """显示渲染设置面板"""
@@ -16,7 +40,9 @@ def show_render_settings_panel():
 
     keep_open = True
 
-    if imgui.begin("渲染设置", True):
+    # 使用imgui.begin返回的布尔值来判断窗口是否应该关闭
+    window_open = imgui.begin("渲染设置", True)
+    if window_open:
         # 基本信息部分
         imgui.text("基本信息")
         imgui.separator()
@@ -24,61 +50,53 @@ def show_render_settings_panel():
         # 分辨率设置
         imgui.text("分辨率:")
         imgui.same_line()
-        resolution_width = 1280
-        resolution_height = 720
-        imgui.text(f"{resolution_width} × {resolution_height}")
+        imgui.text(f"{render_settings['resolution_width']} × {render_settings['resolution_height']}")
 
-        # 渲染器类型
+        # 渲染器类型 - 使用combo替代begin_combo
         imgui.text("渲染器类型:")
         imgui.same_line()
         renderer_types = ["rasterizer", "path_tracer", "ray_tracer"]
-        current_renderer = "rasterizer"
 
-        if imgui.begin_combo("##renderer_type", current_renderer):
-            for renderer in renderer_types:
-                is_selected = (renderer == current_renderer)
-                if imgui.selectable(renderer, is_selected):
-                    current_renderer = renderer
-                if is_selected:
-                    imgui.set_item_default_focus()
-            imgui.end_combo()
+        # 获取当前选择的索引
+        current_index = renderer_types.index(render_settings['renderer_type'])
+
+        # 使用imgui.combo替代begin_combo
+        clicked, new_index = imgui.combo("##renderer_type", current_index, renderer_types)
+        if clicked:
+            render_settings['renderer_type'] = renderer_types[new_index]
 
         imgui.spacing()
 
         # 光栅化渲染部分
-        if current_renderer == "rasterizer":
+        if render_settings['renderer_type'] == "rasterizer":
             imgui.text("光栅化渲染设置")
             imgui.separator()
 
-            # 抗锯齿设置
+            # 抗锯齿设置 - 使用combo替代begin_combo
             imgui.text("抗锯齿:")
             imgui.same_line()
             aa_options = ["OFF", "FXAA", "MSAA 2x", "MSAA 4x", "MSAA 8x"]
-            current_aa = "OFF"
 
-            if imgui.begin_combo("##antialiasing", current_aa):
-                for option in aa_options:
-                    is_selected = (option == current_aa)
-                    if imgui.selectable(option, is_selected):
-                        current_aa = option
-                    if is_selected:
-                        imgui.set_item_default_focus()
-                imgui.end_combo()
+            # 获取当前选择的索引
+            current_index = aa_options.index(render_settings['antialiasing'])
 
-            # 颜色类型
+            # 使用imgui.combo替代begin_combo
+            clicked, new_index = imgui.combo("##antialiasing", current_index, aa_options)
+            if clicked:
+                render_settings['antialiasing'] = aa_options[new_index]
+
+            # 颜色类型 - 使用combo替代begin_combo
             imgui.text("颜色类型:")
             imgui.same_line()
             color_types = ["texture", "normal", "depth", "albedo"]
-            current_color_type = "texture"
 
-            if imgui.begin_combo("##color_type", current_color_type):
-                for color_type in color_types:
-                    is_selected = (color_type == current_color_type)
-                    if imgui.selectable(color_type, is_selected):
-                        current_color_type = color_type
-                    if is_selected:
-                        imgui.set_item_default_focus()
-                imgui.end_combo()
+            # 获取当前选择的索引
+            current_index = color_types.index(render_settings['color_type'])
+
+            # 使用imgui.combo替代begin_combo
+            clicked, new_index = imgui.combo("##color_type", current_index, color_types)
+            if clicked:
+                render_settings['color_type'] = color_types[new_index]
 
             imgui.spacing()
 
@@ -90,13 +108,12 @@ def show_render_settings_panel():
             imgui.text("抗锯齿:")
             imgui.same_line()
             aa_options2 = ["OFF", "FXAA", "MSAA 2x", "MSAA 4x", "MSAA 8x"]
-            current_aa2 = "OFF"
 
-            if imgui.begin_combo("##antialiasing2", current_aa2):
+            if imgui.begin_combo("##antialiasing2", render_settings['antialiasing2']):
                 for option in aa_options2:
-                    is_selected = (option == current_aa2)
+                    is_selected = (option == render_settings['antialiasing2'])
                     if imgui.selectable(option, is_selected):
-                        current_aa2 = option
+                        render_settings['antialiasing2'] = option
                     if is_selected:
                         imgui.set_item_default_focus()
                 imgui.end_combo()
@@ -104,57 +121,50 @@ def show_render_settings_panel():
             # 光线追踪开关
             imgui.text("光线追踪:")
             imgui.same_line()
-            ray_tracing_enabled = False
-            _, ray_tracing_enabled = imgui.checkbox("##ray_tracing", ray_tracing_enabled)
+            _, render_settings['ray_tracing_enabled'] = imgui.checkbox("##ray_tracing", render_settings['ray_tracing_enabled'])
 
             # 环境光遮蔽开关
             imgui.text("环境光遮蔽:")
             imgui.same_line()
-            ambient_occlusion_enabled = False
-            _, ambient_occlusion_enabled = imgui.checkbox("##ambient_occlusion", ambient_occlusion_enabled)
+            _, render_settings['ambient_occlusion_enabled'] = imgui.checkbox("##ambient_occlusion", render_settings['ambient_occlusion_enabled'])
 
         # 路径追踪渲染部分
-        elif current_renderer == "path_tracer":
+        elif render_settings['renderer_type'] == "path_tracer":
             imgui.text("路径追踪渲染设置")
             imgui.separator()
 
             # 采样数设置
             imgui.text("采样数:")
             imgui.same_line()
-            samples = 64
-            imgui.text(f"{samples}")
+            imgui.text(f"{render_settings['samples']}")
 
             # 其他路径追踪相关设置可以在这里添加
             imgui.text("最大深度:")
             imgui.same_line()
-            max_depth = 8
-            imgui.text(f"{max_depth}")
+            imgui.text(f"{render_settings['max_depth']}")
 
             imgui.text("俄罗斯轮盘:")
             imgui.same_line()
-            russian_roulette = True
-            _, russian_roulette = imgui.checkbox("##russian_roulette", russian_roulette)
+            _, render_settings['russian_roulette'] = imgui.checkbox("##russian_roulette", render_settings['russian_roulette'])
 
         # 光线追踪渲染部分
-        elif current_renderer == "ray_tracer":
+        elif render_settings['renderer_type'] == "ray_tracer":
             imgui.text("光线追踪渲染设置")
             imgui.separator()
 
             imgui.text("反射次数:")
             imgui.same_line()
-            reflection_depth = 4
-            imgui.text(f"{reflection_depth}")
+            imgui.text(f"{render_settings['reflection_depth']}")
 
             imgui.text("阴影质量:")
             imgui.same_line()
-            shadow_quality = "High"
             shadow_qualities = ["Low", "Medium", "High", "Ultra"]
 
-            if imgui.begin_combo("##shadow_quality", shadow_quality):
+            if imgui.begin_combo("##shadow_quality", render_settings['shadow_quality']):
                 for quality in shadow_qualities:
-                    is_selected = (quality == shadow_quality)
+                    is_selected = (quality == render_settings['shadow_quality'])
                     if imgui.selectable(quality, is_selected):
-                        shadow_quality = quality
+                        render_settings['shadow_quality'] = quality
                     if is_selected:
                         imgui.set_item_default_focus()
                 imgui.end_combo()
@@ -176,7 +186,25 @@ def show_render_settings_panel():
 
         if imgui.button("保存", imgui.ImVec2(button_width, button_height)):
             # 保存设置的逻辑
-            print("渲染设置已保存")
+            print("渲染设置已保存:")
+            print(f"  分辨率: {render_settings['resolution_width']} × {render_settings['resolution_height']}")
+            print(f"  渲染器类型: {render_settings['renderer_type']}")
+
+            if render_settings['renderer_type'] == "rasterizer":
+                print(f"  抗锯齿: {render_settings['antialiasing']}")
+                print(f"  颜色类型: {render_settings['color_type']}")
+                print(f"  高级抗锯齿: {render_settings['antialiasing2']}")
+                print(f"  光线追踪: {'开启' if render_settings['ray_tracing_enabled'] else '关闭'}")
+                print(f"  环境光遮蔽: {'开启' if render_settings['ambient_occlusion_enabled'] else '关闭'}")
+            elif render_settings['renderer_type'] == "path_tracer":
+                print(f"  采样数: {render_settings['samples']}")
+                print(f"  最大深度: {render_settings['max_depth']}")
+                print(f"  俄罗斯轮盘: {'开启' if render_settings['russian_roulette'] else '关闭'}")
+            elif render_settings['renderer_type'] == "ray_tracer":
+                print(f"  反射次数: {render_settings['reflection_depth']}")
+                print(f"  阴影质量: {render_settings['shadow_quality']}")
+
+            keep_open = False  # 保存后关闭窗口
 
         imgui.same_line()
 
@@ -185,11 +213,8 @@ def show_render_settings_panel():
             print("渲染设置已取消")
             keep_open = False
 
-    # 检查窗口是否被关闭
-    if not imgui.is_window_appearing() and not imgui.is_window_collapsed():
-        if not imgui.is_window_focused() and imgui.is_key_pressed(imgui.Key.escape):
-            keep_open = False
-
     imgui.end()
 
-    return keep_open
+    # 如果窗口被关闭（通过关闭按钮或ESC键），或者用户点击了保存/取消按钮，则返回False
+    # 否则返回True保持窗口打开
+    return window_open and keep_open
