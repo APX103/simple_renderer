@@ -204,7 +204,7 @@ class ImGuiApp:
 
         # 创建界面
         imgui.dock_space_over_viewport()
-        self.create_menu_bar()
+        # self.create_menu_bar()
         self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
 
