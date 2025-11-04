@@ -145,11 +145,11 @@ class ImGuiApp:
                         imgui.WindowFlags_.no_nav_focus)
 
         imgui.push_style_var(imgui.StyleVar_.window_padding, imgui.ImVec2(0.0, 0.0))
-        imgui.begin("DockSpace Demo", True, window_flags)
+        imgui.begin("DockSpace", True, window_flags)
         imgui.pop_style_var()
 
         # 提交dock space
-        dockspace_id = imgui.get_id("MyDockSpace")
+        dockspace_id = imgui.get_id("DockSpace")
         imgui.dock_space(dockspace_id, imgui.ImVec2(0.0, 0.0))
 
         imgui.end()
