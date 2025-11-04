@@ -1,5 +1,9 @@
-# import imgui
-from imgui_bundle import immapp, hello_imgui, imgui
+#!/usr/bin/env python3
+"""
+使用imgui-bundle但不用hello_imgui的简化版本
+"""
+
+from imgui_bundle import imgui, immapp
 import sys
 
 class ImGuiApp:
@@ -68,7 +72,7 @@ class ImGuiApp:
                     self.import_assets()
                 imgui.separator()
                 if imgui.menu_item("退出", "", False)[0]:
-                    hello_imgui.get_runner_params().app_shall_exit = True
+                    immapp.runner_params().app_shall_exit = True
                 imgui.end_menu()
 
             # 编辑菜单
@@ -157,56 +161,46 @@ class ImGuiApp:
     def save_file(self):
         """保存文件"""
         print("执行保存文件操作")
-        # 这里可以添加实际的保存逻辑
 
     def save_copy(self):
         """保存副本"""
         print("执行保存副本操作")
-        # 这里可以添加实际的保存副本逻辑
 
     def load_file(self):
         """加载文件"""
         print("执行加载文件操作")
-        # 这里可以添加实际的加载逻辑
 
     def import_assets(self):
         """导入资产"""
         print("执行导入资产操作")
-        # 这里可以添加实际的导入逻辑
 
     def undo(self):
         """撤销操作"""
         print("执行撤销操作")
-        # 这里可以添加实际的撤销逻辑
 
     def redo(self):
         """重做操作"""
         print("执行重做操作")
-        # 这里可以添加实际的重做逻辑
 
     def start_new_recording(self):
         """开始新录制"""
         print("开始新录制")
         self.recording = True
-        # 这里可以添加实际的录制逻辑
 
     def render_export(self):
         """渲染导出"""
         print("执行渲染导出操作")
-        # 这里可以添加实际的渲染导出逻辑
 
     def render_settings(self):
         """渲染设置"""
         print("打开渲染设置")
-        # 这里可以添加实际的设置窗口逻辑
 
     def export_current_frame(self):
         """导出当前帧"""
         print("导出当前帧")
-        # 这里可以添加实际的导出逻辑
 
     def gui(self):
-        """主要的GUI函数，由imgui-bundle调用"""
+        """主要的GUI函数"""
         # 处理快捷键
         self.handle_shortcuts()
 
@@ -215,29 +209,19 @@ class ImGuiApp:
         self.show_main_content()
         self.show_about_window()
 
-def create_runner_params(title="ImGui Bundle 应用程序", size=(1280, 720)):
-    """创建简化的runner参数配置"""
-    runner_params = hello_imgui.RunnerParams()
-    runner_params.app_window_params.window_title = title
-    runner_params.app_window_params.window_geometry.size = size
-
-    # 禁用INI文件保存（避免创建奇怪的文件名）
-    runner_params.ini_filename = "imgui.ini"
-
-    return runner_params
-
 def main():
     """主函数"""
     app = ImGuiApp()
 
-    # 创建简化的配置
-    runner_params = create_runner_params("ImGui Bundle 应用程序", (1280, 720))
-
-    # 设置GUI函数
+    # 使用immapp运行应用程序
+    runner_params = immapp.RunnerParams()
+    runner_params.app_window_params.window_title = "ImGui Bundle 应用程序"
+    runner_params.app_window_params.window_geometry.size = (1280, 720)
+    runner_params.ini_filename = ""  # 禁用INI文件
     runner_params.callbacks.show_gui = app.gui
 
-    # 运行应用程序
-    hello_imgui.run(runner_params)
+    print("启动简化版ImGui应用程序...")
+    immapp.run(runner_params)
 
 if __name__ == "__main__":
     main()
