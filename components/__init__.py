@@ -9,11 +9,13 @@ from .panels import (
     show_info_panel,
     show_demo_panels
 )
+from .render import show_render_settings_panel
 
 __all__ = [
     'setup_dock_space',
     'show_status_panel',
     'show_control_panel',
     'show_info_panel',
-    'show_demo_panels'
+    'show_demo_panels',
+    'show_render_settings_panel'
 ]

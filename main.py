@@ -4,7 +4,7 @@ import OpenGL.GL as gl
 from imgui_bundle import imgui
 import sys
 import ctypes
-from components import show_demo_panels
+from components import show_demo_panels, show_render_settings_panel
 from themes import apply_theme
 
 
@@ -99,6 +99,7 @@ class ImGuiApp:
         # 状态变量
         self.file_path = ""
         self.recording = False
+        self.show_render_settings = False
 
         # 字体相关
         self.font = None
@@ -256,6 +257,7 @@ class ImGuiApp:
     def render_settings(self):
         """渲染设置"""
         print("打开渲染设置")
+        self.show_render_settings = True
 
     def export_current_frame(self):
         """导出当前帧"""
@@ -299,6 +301,10 @@ class ImGuiApp:
         self.create_menu_bar()
         self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
+
+        # 显示渲染设置面板
+        if self.show_render_settings:
+            self.show_render_settings = show_render_settings_panel()
 
         # 恢复字体
         if self.font:
