@@ -10,6 +10,7 @@ from .panels import (
     show_demo_panels
 )
 from .render import show_render_settings_panel
+from .properties import show_property_panel
 
 __all__ = [
     'setup_dock_space',
@@ -17,5 +18,6 @@ __all__ = [
     'show_control_panel',
     'show_info_panel',
     'show_demo_panels',
-    'show_render_settings_panel'
+    'show_render_settings_panel',
+    'show_property_panel'
 ]

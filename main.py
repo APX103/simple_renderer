@@ -4,7 +4,7 @@ import OpenGL.GL as gl
 from imgui_bundle import imgui
 import sys
 import ctypes
-from components import show_demo_panels, show_render_settings_panel
+from components import show_demo_panels, show_render_settings_panel, show_property_panel
 from themes import apply_theme
 
 
@@ -100,6 +100,7 @@ class ImGuiApp:
         self.file_path = ""
         self.recording = False
         self.show_render_settings = False
+        self.show_property_panel = True
 
         # 字体相关
         self.font = None
@@ -305,6 +306,10 @@ class ImGuiApp:
         # 显示渲染设置面板
         if self.show_render_settings:
             self.show_render_settings = show_render_settings_panel()
+
+        # 显示属性面板
+        if self.show_property_panel:
+            self.show_property_panel = show_property_panel()
 
         # 恢复字体
         if self.font:
