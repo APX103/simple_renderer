@@ -1,9 +1,93 @@
 #!/usr/bin/env python3
-from imgui_bundle import imgui, immapp
+import glfw
+import OpenGL.GL as gl
+from imgui_bundle import imgui
 import sys
+import ctypes
 from components import show_demo_panels
 
+
+def create_window(width=1280, height=720, title="ImGui App"):
+    """创建GLFW窗口"""
+    if not glfw.init():
+        raise Exception("无法初始化GLFW")
+
+    glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
+    glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
+    glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+
+    window = glfw.create_window(width, height, title, None, None)
+    if not window:
+        glfw.terminate()
+        raise Exception("无法创建GLFW窗口")
+
+    glfw.make_context_current(window)
+    return window
+
+
+def init_imgui(window):
+    """初始化ImGui"""
+    imgui.create_context()
+
+    # 设置ImGui IO
+    io = imgui.get_io()
+    io.config_flags |= imgui.ConfigFlags_.docking_enable
+    io.config_flags |= imgui.ConfigFlags_.viewports_enable
+
+    # 设置ImGui样式
+    style = imgui.get_style()
+    style.window_rounding = 0.0
+
+    # 设置平台绑定
+    window_address = ctypes.cast(window, ctypes.c_void_p).value
+    imgui.backends.glfw_init_for_opengl(window_address, True)
+    imgui.backends.opengl3_init("#version 130")
+
+
+def run_imgui_app(gui_function, window_title="Pulse", width=1280, height=720):
+    """运行ImGui应用程序"""
+    window = create_window(width, height, window_title)
+    init_imgui(window)
+
+    # 主循环
+    while not glfw.window_should_close(window):
+        glfw.poll_events()
+
+        # 开始新帧
+        imgui.backends.opengl3_new_frame()
+        imgui.backends.glfw_new_frame()
+        imgui.new_frame()
+
+        # 调用用户GUI函数
+        gui_function()
+
+        # 渲染
+        imgui.render()
+
+        gl.glClearColor(0.1, 0.1, 0.1, 1)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
+        imgui.backends.opengl3_render_draw_data(imgui.get_draw_data())
+
+        # 处理多视口
+        if imgui.get_io().config_flags & imgui.ConfigFlags_.viewports_enable:
+            backup_current_context = glfw.get_current_context()
+            imgui.update_platform_windows()
+            imgui.render_platform_windows_default()
+            glfw.make_context_current(backup_current_context)
+
+        glfw.swap_buffers(window)
+
+    # 清理
+    imgui.backends.opengl3_shutdown()
+    imgui.backends.glfw_shutdown()
+    imgui.destroy_context()
+    glfw.terminate()
+
+
 class ImGuiApp:
+    """迁移后的ImGui应用程序类"""
+
     def __init__(self):
         self.show_about = False
         self.render_preview = True
@@ -62,49 +146,49 @@ class ImGuiApp:
 
             # 文件菜单
             if imgui.begin_menu("文件", True):
-                if imgui.menu_item("保存", "Ctrl+S", False)[0]:
+                if imgui.menu_item("保存", "Ctrl+S", False, True)[0]:
                     self.save_file()
-                if imgui.menu_item("保存副本", "Ctrl+A", False)[0]:
+                if imgui.menu_item("保存副本", "Ctrl+A", False, True)[0]:
                     self.save_copy()
-                if imgui.menu_item("加载", "Ctrl+L", False)[0]:
+                if imgui.menu_item("加载", "Ctrl+L", False, True)[0]:
                     self.load_file()
                 imgui.separator()
-                if imgui.menu_item("导入资产", "Ctrl+I", False)[0]:
+                if imgui.menu_item("导入资产", "Ctrl+I", False, True)[0]:
                     self.import_assets()
                 imgui.separator()
-                if imgui.menu_item("退出", "", False)[0]:
+                if imgui.menu_item("退出", "", False, True)[0]:
                     sys.exit(0)
                 imgui.end_menu()
 
             # 编辑菜单
             if imgui.begin_menu("编辑", True):
-                if imgui.menu_item("撤销", "Ctrl+Z", False)[0]:
+                if imgui.menu_item("撤销", "Ctrl+Z", False, True)[0]:
                     self.undo()
-                if imgui.menu_item("重做", "Ctrl+Shift+Z", False)[0]:
+                if imgui.menu_item("重做", "Ctrl+Shift+Z", False, True)[0]:
                     self.redo()
                 imgui.end_menu()
 
             # 录制菜单
             if imgui.begin_menu("录制", True):
-                if imgui.menu_item("开始新录制", "Ctrl+T", False)[0]:
+                if imgui.menu_item("开始新录制", "Ctrl+T", False, True)[0]:
                     self.start_new_recording()
                 imgui.end_menu()
 
             # 渲染菜单
             if imgui.begin_menu("渲染", True):
-                if imgui.menu_item("渲染预览", "P", False)[0]:
+                if imgui.menu_item("渲染预览", "P", False, True)[0]:
                     self.render_preview = not self.render_preview
-                if imgui.menu_item("渲染导出", "Ctrl+R", False)[0]:
+                if imgui.menu_item("渲染导出", "Ctrl+R", False, True)[0]:
                     self.render_export()
-                if imgui.menu_item("渲染设置", "Ctrl+O", False)[0]:
+                if imgui.menu_item("渲染设置", "Ctrl+O", False, True)[0]:
                     self.render_settings()
-                if imgui.menu_item("导出当前帧", "Ctrl+P", False)[0]:
+                if imgui.menu_item("导出当前帧", "Ctrl+P", False, True)[0]:
                     self.export_current_frame()
                 imgui.end_menu()
 
             # 帮助菜单
             if imgui.begin_menu("帮助", True):
-                if imgui.menu_item("关于", "", False)[0]:
+                if imgui.menu_item("关于", "", False, True)[0]:
                     self.show_about = True
                 imgui.end_menu()
 
@@ -125,7 +209,6 @@ class ImGuiApp:
             if imgui.button("关闭"):
                 self.show_about = False
             imgui.end()
-
 
     # 菜单功能实现
     def save_file(self):
@@ -189,7 +272,7 @@ class ImGuiApp:
             self.font = io.fonts.add_font_default()
 
     def gui(self):
-        """主要的GUI函数"""       
+        """主要的GUI函数"""
         # 处理快捷键
         self.handle_shortcuts()
 
@@ -204,7 +287,7 @@ class ImGuiApp:
 
         # 创建界面
         imgui.dock_space_over_viewport()
-        # self.create_menu_bar()
+        self.create_menu_bar()
         self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
 
@@ -212,18 +295,12 @@ class ImGuiApp:
         if self.font:
             imgui.pop_font()
 
+
 def main():
     """主函数"""
     app = ImGuiApp()
+    run_imgui_app(app.gui, "Pulse - Migrated")
 
-    # 使用immapp运行应用程序
-    runner_params = immapp.RunnerParams()
-    runner_params.app_window_params.window_title = "Pulse"
-    runner_params.app_window_params.window_geometry.size = (1280, 720)
-    runner_params.ini_filename = ""  # 禁用INI文件
-    runner_params.callbacks.show_gui = app.gui
-
-    immapp.run(runner_params)
 
 if __name__ == "__main__":
     main()
