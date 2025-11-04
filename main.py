@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-"""
-使用imgui-bundle但不用hello_imgui的简化版本
-"""
-
 from imgui_bundle import imgui, immapp
 import sys
-from components import setup_dock_space, show_all_panels
+from components import show_demo_panels
 
 class ImGuiApp:
     def __init__(self):
@@ -193,7 +189,7 @@ class ImGuiApp:
             self.font = io.fonts.add_font_default()
 
     def gui(self):
-        """主要的GUI函数"""
+        """主要的GUI函数"""       
         # 处理快捷键
         self.handle_shortcuts()
 
@@ -207,9 +203,9 @@ class ImGuiApp:
             imgui.push_font(self.font, 16.0)
 
         # 创建界面
+        imgui.dock_space_over_viewport()
         self.create_menu_bar()
-        setup_dock_space()
-        self.recording = show_all_panels(self.file_path, self.recording, self.render_preview)
+        self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
 
         # 恢复字体

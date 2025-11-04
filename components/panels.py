@@ -53,7 +53,7 @@ def show_info_panel():
     imgui.end()
 
 
-def show_all_panels(file_path: str, recording: bool, render_preview: bool) -> bool:
+def show_demo_panels(file_path: str, recording: bool, render_preview: bool) -> bool:
     """显示所有面板"""
     show_status_panel(file_path, recording, render_preview)
     new_recording = show_control_panel(recording)

@@ -3,12 +3,11 @@
 Components 模块
 """
 
-from .dock_space import setup_dock_space
 from .panels import (
     show_status_panel,
     show_control_panel,
     show_info_panel,
-    show_all_panels
+    show_demo_panels
 )
 
 __all__ = [
@@ -16,5 +15,5 @@ __all__ = [
     'show_status_panel',
     'show_control_panel',
     'show_info_panel',
-    'show_all_panels'
+    'show_demo_panels'
 ]
