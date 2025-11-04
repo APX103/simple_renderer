@@ -5,6 +5,7 @@ from imgui_bundle import imgui
 import sys
 import ctypes
 from components import show_demo_panels
+from themes import apply_theme
 
 
 def create_window(width=1280, height=720, title="ImGui App"):
@@ -60,6 +61,9 @@ def run_imgui_app(gui_function, window_title="Pulse", width=1280, height=720):
 
         # 调用用户GUI函数
         gui_function()
+        
+        apply_theme('./themes/Light_Orange.toml')
+        # apply_theme('./themes/Soft_Cherry.toml')
 
         # 渲染
         imgui.render()
@@ -198,17 +202,22 @@ class ImGuiApp:
         """显示关于窗口"""
         if self.show_about:
             imgui.set_next_window_size(imgui.ImVec2(300, 200))
-            imgui.begin("关于", True)
-            imgui.text("ImGui Bundle 应用程序")
-            imgui.text("版本: 1.0.0")
-            imgui.text("作者: Your Name")
-            imgui.separator()
-            imgui.text("一个使用imgui-bundle构建的")
-            imgui.text("简单图形界面应用程序")
+            # imgui.begin() 返回一个布尔值，表示窗口是否打开
+            if imgui.begin("关于", True):
+                imgui.text("ImGui Bundle 应用程序")
+                imgui.text("版本: 1.0.0")
+                imgui.text("作者: Your Name")
+                imgui.separator()
+                imgui.text("一个使用imgui-bundle构建的")
+                imgui.text("简单图形界面应用程序")
 
-            if imgui.button("关闭"):
+                if imgui.button("关闭"):
+                    self.show_about = False
+                imgui.end()
+            else:
+                # 用户点击了小叉叉关闭窗口
                 self.show_about = False
-            imgui.end()
+                imgui.end()
 
     # 菜单功能实现
     def save_file(self):
