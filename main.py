@@ -5,7 +5,6 @@ from imgui_bundle import imgui
 import sys
 import ctypes
 from components import show_demo_panels, show_render_settings_panel, show_property_panel, show_outline_panel, ViewportManager, show_viewport_panel
-from components.viewport_opengl import ViewportManagerOpenGL, show_viewport_opengl_panel
 from themes import apply_theme
 
 
@@ -106,13 +105,9 @@ class ImGuiApp:
         self.show_property_panel = True
         self.show_outline_panel = True
         self.show_viewport = True
-        self.use_opengl_viewport = False  # 是否使用 OpenGL viewport
 
         # 视口管理器
         self.viewport_manager = ViewportManager()
-
-        # OpenGL 视口管理器
-        self.opengl_viewport_manager = ViewportManagerOpenGL()
 
         # 字体相关
         self.font = None
@@ -213,8 +208,6 @@ class ImGuiApp:
                 imgui.separator()
                 if imgui.menu_item("变色视口", "", False, True)[0]:
                     self.show_viewport = not self.show_viewport
-                if imgui.menu_item("使用 OpenGL 视口", "", self.use_opengl_viewport, True)[0]:
-                    self.use_opengl_viewport = not self.use_opengl_viewport
                 imgui.end_menu()
 
             # 帮助菜单
@@ -324,7 +317,7 @@ class ImGuiApp:
 
         # 在第一次运行时初始化 OpenGL viewport
         if not hasattr(self, '_opengl_initialized'):
-            self.opengl_viewport_manager.init_opengl_context()
+            self.viewport_manager.init_opengl_context()
             self._opengl_initialized = True
 
         # 应用自定义字体
@@ -351,10 +344,7 @@ class ImGuiApp:
 
         # 显示视口
         if self.show_viewport:
-            if self.use_opengl_viewport:
-                self.show_viewport = show_viewport_opengl_panel(self.opengl_viewport_manager, self.show_viewport)
-            else:
-                self.show_viewport = show_viewport_panel(self.viewport_manager, self.show_viewport)
+            self.show_viewport = show_viewport_panel(self.viewport_manager, self.show_viewport)
 
         # 恢复字体
         if self.font:
