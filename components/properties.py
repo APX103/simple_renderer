@@ -82,7 +82,6 @@ def show_property_panel(open: bool) -> bool:
 
     keep_open = True
     window_open = imgui.begin("属性面板", open)[1]
-    print( "Property Panel Open:", window_open )
 
     if window_open:
         # 根据选中的对象类型显示不同的属性面板

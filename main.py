@@ -4,7 +4,7 @@ import OpenGL.GL as gl
 from imgui_bundle import imgui
 import sys
 import ctypes
-from components import show_demo_panels, show_render_settings_panel, show_property_panel
+from components import show_demo_panels, show_render_settings_panel, show_property_panel, show_outline_panel
 from themes import apply_theme
 
 
@@ -62,7 +62,9 @@ def run_imgui_app(gui_function, window_title="Pulse", width=1280, height=720):
         # 调用用户GUI函数
         gui_function()
         
-        apply_theme('./themes/Light_Orange.toml')
+        # 应用主题
+        apply_theme('./themes/Classic.toml')
+        # apply_theme('./themes/Light_Orange.toml')
         # apply_theme('./themes/Soft_Cherry.toml')
 
         # 渲染
@@ -101,6 +103,7 @@ class ImGuiApp:
         self.recording = False
         self.show_render_settings = False
         self.show_property_panel = True
+        self.show_outline_panel = True
 
         # 字体相关
         self.font = None
@@ -192,6 +195,14 @@ class ImGuiApp:
                     self.export_current_frame()
                 imgui.end_menu()
 
+            # 视图菜单
+            if imgui.begin_menu("视图", True):
+                if imgui.menu_item("大纲面板", "", self.show_outline_panel, True)[0]:
+                    self.show_outline_panel = not self.show_outline_panel
+                if imgui.menu_item("属性面板", "", self.show_property_panel, True)[0]:
+                    self.show_property_panel = not self.show_property_panel
+                imgui.end_menu()
+
             # 帮助菜单
             if imgui.begin_menu("帮助", True):
                 if imgui.menu_item("关于", "", False, True)[0]:
@@ -269,14 +280,18 @@ class ImGuiApp:
         try:
             io = imgui.get_io()
 
-            # 加载自定义字体
+            # 加载汉字字体
             font_path = "assets/heiti.ttf"
             self.font = io.fonts.add_font_from_file_ttf(
                 font_path,
                 16.0  # 字体大小
             )
-
-            print(f"成功加载字体: {font_path}")
+            
+            # 加载彩色表情字体
+            self.emoji_font = io.fonts.add_font_from_file_ttf(
+                "assets/NotoColorEmoji.ttf",
+                16.0  # 字体大小
+            )
 
         except Exception as e:
             print(f"字体加载失败: {e}")
@@ -300,7 +315,7 @@ class ImGuiApp:
         # 创建界面
         imgui.dock_space_over_viewport()
         self.create_menu_bar()
-        self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
+        # self.recording = show_demo_panels(self.file_path, self.recording, self.render_preview)
         self.show_about_window()
 
         # 显示渲染设置面板
@@ -310,6 +325,10 @@ class ImGuiApp:
         # 显示属性面板
         if self.show_property_panel:
             self.show_property_panel = show_property_panel(self.show_property_panel)
+
+        # 显示大纲面板
+        if self.show_outline_panel:
+            self.show_outline_panel = show_outline_panel(self.show_outline_panel)
 
         # 恢复字体
         if self.font:
