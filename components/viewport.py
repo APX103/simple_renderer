@@ -295,10 +295,10 @@ def show_viewport_panel(viewport_manager: ViewportManager, window_open: bool = T
             texture_ref = imgui.ImTextureRef(viewport_manager.texture_id)
             imgui.image(texture_ref, draw_size)
 
-        # Display information
-        imgui.text(f"旋转角度: {viewport_manager.rotation_angle:.1f}°")
-        imgui.text(f"绘制区域: {int(draw_size.x)} x {int(draw_size.y)}")
-        imgui.text(f"使用 OpenGL API 渲染")
+        # # Display information
+        # imgui.text(f"旋转角度: {viewport_manager.rotation_angle:.1f}°")
+        # imgui.text(f"绘制区域: {int(draw_size.x)} x {int(draw_size.y)}")
+        # imgui.text(f"使用 OpenGL API 渲染")
 
         imgui.end_child()
 
