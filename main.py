@@ -4,7 +4,7 @@ import OpenGL.GL as gl
 from imgui_bundle import imgui
 import sys
 import ctypes
-from components import show_demo_panels, show_render_settings_panel, show_property_panel, show_outline_panel
+from components import show_demo_panels, show_render_settings_panel, show_property_panel, show_outline_panel, ViewportManager, show_viewport_panel
 from themes import apply_theme
 
 
@@ -104,6 +104,10 @@ class ImGuiApp:
         self.show_render_settings = False
         self.show_property_panel = True
         self.show_outline_panel = True
+        self.show_viewport = True
+
+        # 视口管理器
+        self.viewport_manager = ViewportManager()
 
         # 字体相关
         self.font = None
@@ -197,10 +201,13 @@ class ImGuiApp:
 
             # 视图菜单
             if imgui.begin_menu("视图", True):
-                if imgui.menu_item("大纲面板", "", self.show_outline_panel, True)[0]:
+                if imgui.menu_item("大纲面板", "", False, True)[0]:
                     self.show_outline_panel = not self.show_outline_panel
-                if imgui.menu_item("属性面板", "", self.show_property_panel, True)[0]:
+                if imgui.menu_item("属性面板", "", False, True)[0]:
                     self.show_property_panel = not self.show_property_panel
+                imgui.separator()
+                if imgui.menu_item("变色视口", "", False, True)[0]:
+                    self.show_viewport = not self.show_viewport
                 imgui.end_menu()
 
             # 帮助菜单
@@ -329,6 +336,10 @@ class ImGuiApp:
         # 显示大纲面板
         if self.show_outline_panel:
             self.show_outline_panel = show_outline_panel(self.show_outline_panel)
+
+        # 显示视口
+        if self.show_viewport:
+            self.show_viewport = show_viewport_panel(self.viewport_manager, self.show_viewport)
 
         # 恢复字体
         if self.font:
