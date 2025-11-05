@@ -7,6 +7,25 @@
 from imgui_bundle import imgui
 import os
 
+
+def input_float_with_width(label: str, value: float, width: float = 80.0, format: str = "%.3f") -> tuple[bool, float]:
+    """
+    带固定宽度的 input_float 控件
+
+    Args:
+        label: 控件标签
+        value: 当前值
+        width: 控件宽度
+        format: 显示格式
+
+    Returns:
+        (changed, new_value): 是否改变和新值
+    """
+    imgui.push_item_width(width)
+    changed, new_value = imgui.input_float(label, value, format=format)
+    imgui.pop_item_width()
+    return changed, new_value
+
 # 全局状态变量 - 存储当前选中的对象和属性
 selected_object = {
     "type": "none",  # "mesh", "material", "camera", "light", "none"
@@ -160,29 +179,29 @@ def show_basic_properties(props):
     # 位置
     imgui.text("位置:")
     imgui.same_line()
-    _, props["position"][0] = imgui.input_float("##pos_x", props["position"][0], format="%.3f")
+    _, props["position"][0] = input_float_with_width("##pos_x", props["position"][0], 80.0, "%.3f")
     imgui.same_line()
-    _, props["position"][1] = imgui.input_float("##pos_y", props["position"][1], format="%.3f")
+    _, props["position"][1] = input_float_with_width("##pos_y", props["position"][1], 80.0, "%.3f")
     imgui.same_line()
-    _, props["position"][2] = imgui.input_float("##pos_z", props["position"][2], format="%.3f")
+    _, props["position"][2] = input_float_with_width("##pos_z", props["position"][2], 80.0, "%.3f")
 
     # 旋转
     imgui.text("旋转:")
     imgui.same_line()
-    _, props["rotation"][0] = imgui.input_float("##rot_x", props["rotation"][0], format="%.1f")
+    _, props["rotation"][0] = input_float_with_width("##rot_x", props["rotation"][0], 80.0, "%.1f")
     imgui.same_line()
-    _, props["rotation"][1] = imgui.input_float("##rot_y", props["rotation"][1], format="%.1f")
+    _, props["rotation"][1] = input_float_with_width("##rot_y", props["rotation"][1], 80.0, "%.1f")
     imgui.same_line()
-    _, props["rotation"][2] = imgui.input_float("##rot_z", props["rotation"][2], format="%.1f")
+    _, props["rotation"][2] = input_float_with_width("##rot_z", props["rotation"][2], 80.0, "%.1f")
 
     # 缩放
     imgui.text("缩放:")
     imgui.same_line()
-    _, props["scale"][0] = imgui.input_float("##scale_x", props["scale"][0], format="%.3f")
+    _, props["scale"][0] = input_float_with_width("##scale_x", props["scale"][0], 80.0, "%.3f")
     imgui.same_line()
-    _, props["scale"][1] = imgui.input_float("##scale_y", props["scale"][1], format="%.3f")
+    _, props["scale"][1] = input_float_with_width("##scale_y", props["scale"][1], 80.0, "%.3f")
     imgui.same_line()
-    _, props["scale"][2] = imgui.input_float("##scale_z", props["scale"][2], format="%.3f")
+    _, props["scale"][2] = input_float_with_width("##scale_z", props["scale"][2], 80.0, "%.3f")
 
     imgui.spacing()
 
@@ -303,20 +322,20 @@ def show_camera_basic_properties(props):
     # 位置
     imgui.text("位置:")
     imgui.same_line()
-    _, props["position"][0] = imgui.input_float("##cam_pos_x", props["position"][0], format="%.3f")
+    _, props["position"][0] = input_float_with_width("##cam_pos_x", props["position"][0], 80.0, "%.3f")
     imgui.same_line()
-    _, props["position"][1] = imgui.input_float("##cam_pos_y", props["position"][1], format="%.3f")
+    _, props["position"][1] = input_float_with_width("##cam_pos_y", props["position"][1], 80.0, "%.3f")
     imgui.same_line()
-    _, props["position"][2] = imgui.input_float("##cam_pos_z", props["position"][2], format="%.3f")
+    _, props["position"][2] = input_float_with_width("##cam_pos_z", props["position"][2], 80.0, "%.3f")
 
     # 旋转
     imgui.text("旋转:")
     imgui.same_line()
-    _, props["rotation"][0] = imgui.input_float("##cam_rot_x", props["rotation"][0], format="%.1f")
+    _, props["rotation"][0] = input_float_with_width("##cam_rot_x", props["rotation"][0], 80.0, "%.1f")
     imgui.same_line()
-    _, props["rotation"][1] = imgui.input_float("##cam_rot_y", props["rotation"][1], format="%.1f")
+    _, props["rotation"][1] = input_float_with_width("##cam_rot_y", props["rotation"][1], 80.0, "%.1f")
     imgui.same_line()
-    _, props["rotation"][2] = imgui.input_float("##cam_rot_z", props["rotation"][2], format="%.1f")
+    _, props["rotation"][2] = input_float_with_width("##cam_rot_z", props["rotation"][2], 80.0, "%.1f")
 
 
 def show_camera_settings(props):
@@ -327,20 +346,20 @@ def show_camera_settings(props):
     # 视场角
     imgui.text("视场角 X:")
     imgui.same_line()
-    _, props["fov_x"] = imgui.input_float("##fov_x", props["fov_x"], format="%.1f")
+    _, props["fov_x"] = input_float_with_width("##fov_x", props["fov_x"], 100.0, "%.1f")
 
     imgui.text("视场角 Y:")
     imgui.same_line()
-    _, props["fov_y"] = imgui.input_float("##fov_y", props["fov_y"], format="%.1f")
+    _, props["fov_y"] = input_float_with_width("##fov_y", props["fov_y"], 100.0, "%.1f")
 
     # 裁剪距离
     imgui.text("近裁剪距离:")
     imgui.same_line()
-    _, props["near_clip"] = imgui.input_float("##near_clip", props["near_clip"], format="%.3f")
+    _, props["near_clip"] = input_float_with_width("##near_clip", props["near_clip"], 100.0, "%.3f")
 
     imgui.text("远裁剪距离:")
     imgui.same_line()
-    _, props["far_clip"] = imgui.input_float("##far_clip", props["far_clip"], format="%.1f")
+    _, props["far_clip"] = input_float_with_width("##far_clip", props["far_clip"], 100.0, "%.1f")
 
 
 def show_light_properties():
