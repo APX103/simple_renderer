@@ -109,6 +109,11 @@ class OutlineState:
         # 从JSON加载示例数据
         self.objects = load_outline_from_json(SAMPLE_OUTLINE_JSON)
 
+        # 确保没有任何对象在初始化时被选中
+        self.selected_ids.clear()
+        for obj in self.objects.values():
+            obj.selected = False
+
 
 def load_outline_from_json(json_data: str) -> Dict[str, OutlineObject]:
     """从JSON字符串加载大纲数据结构"""
@@ -235,40 +240,42 @@ def _show_tree_node_recursive(obj: OutlineObject):
     # 检查是否有子对象
     has_children = bool(obj.children)
 
-    # 树节点标志
+    # 树节点标志 - 移除 no_tree_push_on_open 标志，使用标准树节点
     flags = imgui.TreeNodeFlags_.open_on_arrow | imgui.TreeNodeFlags_.open_on_double_click
-    if obj.selected:
-        flags |= imgui.TreeNodeFlags_.selected
+    # 注意：我们不使用 TreeNodeFlags_.selected 标志，因为它可能导致ImGui的默认选择行为
     if not has_children:
         flags |= imgui.TreeNodeFlags_.leaf
     if obj.expanded:
         flags |= imgui.TreeNodeFlags_.default_open
 
-    # 开始树节点
-    node_open = imgui.tree_node_ex(obj.id, flags)
+    # 开始树节点 - 使用空标签，实际内容在同一行显示
+    node_open = imgui.tree_node_ex("##" + obj.id, flags)
+
+    # 处理节点点击
+    if imgui.is_item_clicked() and not imgui.is_item_toggled_open():
+        _handle_object_selection(obj)
+
+    # 在同一行显示对象内容
+    imgui.same_line()
+
+    # 显示对象图标
+    icon = OBJECT_ICONS.get(obj.type, "❓")
+    imgui.text(icon)
+    imgui.same_line()
+
+    # 显示对象名称（可选择且检测hover）
+    _show_selectable_object_name(obj)
+
+    # 显示操作按钮（仅在悬停时）
+    if imgui.is_item_hovered():
+        outline_state.hovered_id = obj.id
+        _show_object_buttons_in_tree(obj)
+        _show_hover_tooltip(obj)
+    elif outline_state.hovered_id == obj.id:
+        # 如果当前对象不再是悬停状态，清除悬停ID
+        outline_state.hovered_id = ""
 
     if node_open:
-        # 处理节点点击
-        if imgui.is_item_clicked() and not imgui.is_item_toggled_open():
-            _handle_object_selection(obj)
-
-        # 在同一行显示对象内容
-        imgui.same_line()
-
-        # 显示对象图标和名称
-        icon = OBJECT_ICONS.get(obj.type, "❓")
-        imgui.text(icon)
-        imgui.same_line()
-
-        # 显示对象名称（支持重命名）
-        _show_object_name_in_tree(obj)
-
-        # 显示操作按钮（仅在悬停时）
-        if imgui.is_item_hovered():
-            outline_state.hovered_id = obj.id
-            _show_object_buttons_in_tree(obj)
-            _show_hover_tooltip(obj)
-
         # 如果节点展开且有子对象，递归显示子对象
         if has_children:
             obj.expanded = True
@@ -284,8 +291,8 @@ def _show_tree_node_recursive(obj: OutlineObject):
         obj.expanded = False
 
 
-def _show_object_name_in_tree(obj: OutlineObject):
-    """在树节点中显示对象名称"""
+def _show_selectable_object_name(obj: OutlineObject):
+    """显示可选择的对象名称（支持重命名和hover检测）"""
     if obj.renaming:
         # 重命名模式
         imgui.set_next_item_width(imgui.get_content_region_avail().x - 60)
@@ -309,7 +316,10 @@ def _show_object_name_in_tree(obj: OutlineObject):
         elif imgui.is_key_pressed(imgui.Key.escape):
             obj.renaming = False
     else:
-        # 正常显示模式
+        # 正常显示模式 - 使用自定义选择状态显示
+        is_selected = obj.id in outline_state.selected_ids
+
+        # 构建显示名称（支持搜索高亮）
         display_name = obj.name
 
         # 高亮搜索匹配
@@ -319,6 +329,11 @@ def _show_object_name_in_tree(obj: OutlineObject):
             match = pattern.search(obj.name)
             if match:
                 start, end = match.span()
+                # # 使用自定义选择状态显示
+                # if is_selected:
+                #     imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
+                #     imgui.same_line()
+
                 # 显示高亮文本
                 if start > 0:
                     imgui.text(obj.name[:start])
@@ -329,14 +344,32 @@ def _show_object_name_in_tree(obj: OutlineObject):
 
                 if end < len(obj.name):
                     imgui.text(obj.name[end:])
+
+                # 添加可点击区域
+                if imgui.is_item_clicked():
+                    _handle_object_selection(obj)
             else:
+                # 使用自定义选择状态显示
+                if is_selected:
+                    imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
+                    imgui.same_line()
                 imgui.text(display_name)
+                if imgui.is_item_clicked():
+                    _handle_object_selection(obj)
         else:
+            # 使用自定义选择状态显示
+            if is_selected:
+                imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
+                imgui.same_line()
             imgui.text(display_name)
+            if imgui.is_item_clicked():
+                _handle_object_selection(obj)
 
 
 def _show_object_buttons_in_tree(obj: OutlineObject):
     """在树节点中显示操作按钮"""
+    imgui.same_line()
+    
     # 重命名按钮
     if imgui.button("✏️##rename"):
         obj.renaming = True
@@ -368,6 +401,9 @@ def _show_object_item(obj: OutlineObject, depth: int = 0, is_filtered: bool = Fa
     if imgui.is_item_hovered():
         outline_state.hovered_id = obj.id
         _show_hover_tooltip(obj)
+    elif outline_state.hovered_id == obj.id:
+        # 如果当前对象不再是悬停状态，清除悬停ID
+        outline_state.hovered_id = ""
 
     # 在同一行显示对象内容
     imgui.same_line()
@@ -468,19 +504,36 @@ def _show_hover_tooltip(obj: OutlineObject):
 
 def _handle_object_selection(obj: OutlineObject):
     """处理对象选择"""
-    # 获取所有需要选中的对象（包括子对象）
-    all_selected_ids = _get_all_children_ids(obj.id)
-    all_selected_ids.add(obj.id)
-
     # 如果对象已经选中，则取消选择
     if obj.id in outline_state.selected_ids:
-        outline_state.selected_ids.difference_update(all_selected_ids)
+        # 获取所有需要取消选择的对象（包括子对象）
+        all_deselected_ids = _get_all_children_ids(obj.id)
+        all_deselected_ids.add(obj.id)
+
+        # 更新全局选择状态
+        outline_state.selected_ids.difference_update(all_deselected_ids)
+
+        # 更新对象级别的选择状态
+        for obj_id in all_deselected_ids:
+            if obj_id in outline_state.objects:
+                outline_state.objects[obj_id].selected = False
+
         # 清除属性面板选择
         _clear_properties_selection()
     else:
-        # 清除当前选择，选择新对象及其所有子对象
+        # 清除当前选择，选择新对象（不自动选择子对象）
+        # 先清除所有对象的选择状态
+        for selected_id in outline_state.selected_ids:
+            if selected_id in outline_state.objects:
+                outline_state.objects[selected_id].selected = False
+
+        # 更新全局选择状态
         outline_state.selected_ids.clear()
-        outline_state.selected_ids.update(all_selected_ids)
+        outline_state.selected_ids.add(obj.id)
+
+        # 更新对象级别的选择状态
+        obj.selected = True
+
         # 更新属性面板选择
         _update_properties_selection(obj)
 

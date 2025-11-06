@@ -283,27 +283,39 @@ class ImGuiApp:
         print("导出当前帧")
 
     def load_custom_font(self):
-        """加载自定义字体"""
+        """加载自定义字体，实现字体回退机制"""
         try:
             io = imgui.get_io()
 
-            # 加载汉字字体
+            # 创建字体配置
+            font_config = imgui.ImFontConfig()
+
+            # 首先加载heiti字体作为主字体
             font_path = "assets/heiti.ttf"
             self.font = io.fonts.add_font_from_file_ttf(
                 font_path,
-                16.0  # 字体大小
+                16.0,  # 字体大小
+                font_cfg=font_config
             )
-            
-            # 加载彩色表情字体
+
+            # 为表情字体创建新的配置，启用合并模式
+            emoji_config = imgui.ImFontConfig()
+            emoji_config.merge_mode = True
+
+            # 设置表情字体的字符范围（只包含表情符号）
+            # imgui-bundle会自动处理字符范围
+
+            # 加载NotoColorEmoji字体并合并到主字体中
             self.emoji_font = io.fonts.add_font_from_file_ttf(
-                "assets/NotoColorEmoji.ttf",
-                16.0  # 字体大小
+                "assets/NotoEmojiRegular.ttf",
+                16.0,  # 字体大小
+                font_cfg=emoji_config
             )
 
         except Exception as e:
             print(f"字体加载失败: {e}")
-            # 如果加载失败，使用默认字体
-            self.font = io.fonts.add_font_default()
+            # 如果加载失败，在gui函数中会使用默认字体
+            self.font = None
 
     def gui(self):
         """主要的GUI函数"""
