@@ -245,27 +245,6 @@ def show_viewport_panel(viewport_manager: ViewportManager, window_open: bool = T
     window_open = imgui.begin("OpenGL 视口", True)
 
     if window_open:
-        # # Control panel
-        # imgui.text("控制设置:")
-
-        # # Rotation speed control
-        # imgui.text("旋转速度:")
-        # _, viewport_manager.rotation_speed = imgui.slider_float("##speed",
-        #                                                       viewport_manager.rotation_speed,
-        #                                                       0.1, 5.0)
-
-        # # Square color control
-        # imgui.text("正方形颜色:")
-        # _, viewport_manager.square_color = imgui.color_edit4("##square_color",
-        #                                                    viewport_manager.square_color)
-
-        # # Background color control
-        # imgui.text("背景颜色:")
-        # _, viewport_manager.background_color = imgui.color_edit4("##bg_color",
-        #                                                         viewport_manager.background_color)
-
-        # imgui.separator()
-
         # Get window content region size for drawing
         content_region = imgui.get_content_region_avail()
         window_width = int(content_region.x)
@@ -294,11 +273,6 @@ def show_viewport_panel(viewport_manager: ViewportManager, window_open: bool = T
             # Convert OpenGL texture ID to ImGui texture reference
             texture_ref = imgui.ImTextureRef(viewport_manager.texture_id)
             imgui.image(texture_ref, draw_size)
-
-        # # Display information
-        # imgui.text(f"旋转角度: {viewport_manager.rotation_angle:.1f}°")
-        # imgui.text(f"绘制区域: {int(draw_size.x)} x {int(draw_size.y)}")
-        # imgui.text(f"使用 OpenGL API 渲染")
 
         imgui.end_child()
 
