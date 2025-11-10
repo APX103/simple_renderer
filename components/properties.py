@@ -122,24 +122,24 @@ def show_property_panel(open: bool) -> bool:
 def show_no_selection():
     """未选中对象时的显示"""
     imgui.text("未选中对象")
-    imgui.separator()
-    imgui.text("请选择一个对象以查看其属性")
+    # imgui.separator()
+    # imgui.text("请选择一个对象以查看其属性")
 
-    # 测试按钮 - 用于演示不同对象类型
-    imgui.spacing()
-    imgui.text("测试选择:")
+    # # 测试按钮 - 用于演示不同对象类型
+    # imgui.spacing()
+    # imgui.text("测试选择:")
 
-    if imgui.button("选择网格"):
-        select_object("mesh", "测试网格")
-    imgui.same_line()
-    if imgui.button("选择材质"):
-        select_object("material", "测试材质")
-    imgui.same_line()
-    if imgui.button("选择摄像机"):
-        select_object("camera", "测试摄像机")
-    imgui.same_line()
-    if imgui.button("选择HDRI"):
-        select_object("light", "测试HDRI")
+    # if imgui.button("选择网格"):
+    #     select_object("mesh", "测试网格")
+    # imgui.same_line()
+    # if imgui.button("选择材质"):
+    #     select_object("material", "测试材质")
+    # imgui.same_line()
+    # if imgui.button("选择摄像机"):
+    #     select_object("camera", "测试摄像机")
+    # imgui.same_line()
+    # if imgui.button("选择HDRI"):
+    #     select_object("light", "测试HDRI")
 
 
 def show_mesh_properties():

@@ -351,7 +351,7 @@ def _show_selectable_object_name(obj: OutlineObject):
             else:
                 # 使用自定义选择状态显示
                 if is_selected:
-                    imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
+                    # imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
                     imgui.same_line()
                 imgui.text(display_name)
                 if imgui.is_item_clicked():
@@ -359,7 +359,7 @@ def _show_selectable_object_name(obj: OutlineObject):
         else:
             # 使用自定义选择状态显示
             if is_selected:
-                imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
+                # imgui.text_colored(imgui.ImVec4(0.26, 0.59, 0.98, 1.0), "● ")
                 imgui.same_line()
             imgui.text(display_name)
             if imgui.is_item_clicked():

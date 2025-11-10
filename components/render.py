@@ -104,19 +104,18 @@ def show_render_settings_panel(open: bool) -> bool:
             imgui.text("高级光栅化设置")
             imgui.separator()
 
-            # 抗锯齿设置
+            # 抗锯齿设置 - 使用combo替代begin_combo
             imgui.text("抗锯齿:")
             imgui.same_line()
             aa_options2 = ["OFF", "FXAA", "MSAA 2x", "MSAA 4x", "MSAA 8x"]
 
-            if imgui.begin_combo("##antialiasing2", render_settings['antialiasing2']):
-                for option in aa_options2:
-                    is_selected = (option == render_settings['antialiasing2'])
-                    if imgui.selectable(option, is_selected):
-                        render_settings['antialiasing2'] = option
-                    if is_selected:
-                        imgui.set_item_default_focus()
-                imgui.end_combo()
+            # 获取当前选择的索引
+            current_index = aa_options2.index(render_settings['antialiasing2'])
+
+            # 使用imgui.combo替代begin_combo
+            clicked, new_index = imgui.combo("##antialiasing2", current_index, aa_options2)
+            if clicked:
+                render_settings['antialiasing2'] = aa_options2[new_index]
 
             # 光线追踪开关
             imgui.text("光线追踪:")

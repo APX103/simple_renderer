@@ -245,26 +245,26 @@ def show_viewport_panel(viewport_manager: ViewportManager, window_open: bool = T
     window_open = imgui.begin("OpenGL 视口", True)
 
     if window_open:
-        # Control panel
-        imgui.text("控制设置:")
+        # # Control panel
+        # imgui.text("控制设置:")
 
-        # Rotation speed control
-        imgui.text("旋转速度:")
-        _, viewport_manager.rotation_speed = imgui.slider_float("##speed",
-                                                              viewport_manager.rotation_speed,
-                                                              0.1, 5.0)
+        # # Rotation speed control
+        # imgui.text("旋转速度:")
+        # _, viewport_manager.rotation_speed = imgui.slider_float("##speed",
+        #                                                       viewport_manager.rotation_speed,
+        #                                                       0.1, 5.0)
 
-        # Square color control
-        imgui.text("正方形颜色:")
-        _, viewport_manager.square_color = imgui.color_edit4("##square_color",
-                                                           viewport_manager.square_color)
+        # # Square color control
+        # imgui.text("正方形颜色:")
+        # _, viewport_manager.square_color = imgui.color_edit4("##square_color",
+        #                                                    viewport_manager.square_color)
 
-        # Background color control
-        imgui.text("背景颜色:")
-        _, viewport_manager.background_color = imgui.color_edit4("##bg_color",
-                                                                viewport_manager.background_color)
+        # # Background color control
+        # imgui.text("背景颜色:")
+        # _, viewport_manager.background_color = imgui.color_edit4("##bg_color",
+        #                                                         viewport_manager.background_color)
 
-        imgui.separator()
+        # imgui.separator()
 
         # Get window content region size for drawing
         content_region = imgui.get_content_region_avail()
