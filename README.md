@@ -1,4 +1,4 @@
-# ImGui Bundle 应用程序
+# Pulse GUI
 
 一个使用imgui-bundle构建的图形界面应用程序，具有完整的菜单栏和快捷键支持。
 
@@ -37,13 +37,7 @@
 pip install -r requirements.txt
 ```
 
-## 运行应用程序
-
-```bash
-python run.py
-```
-
-或者直接运行：
+直接运行：
 
 ```bash
 python main.py
@@ -60,18 +54,8 @@ python main.py
 
 - **imgui-bundle**: 完整的ImGui Python绑定套件
 - **ImGui**: 即时模式图形用户界面
-- **Hello ImGui**: 应用程序框架和窗口管理
 
-## 开发说明
-
-应用程序使用面向对象设计，主要类为 `ImGuiApp`，包含：
-- 菜单栏和快捷键处理
-- 状态管理
-- GUI布局和控件
-
-应用程序使用imgui-bundle的Hello ImGui框架，自动处理窗口创建、事件循环和渲染。
-
-## 扩展功能
+## 扩展功能(TODO)
 
 您可以在相应的方法中添加实际的功能实现：
 - `save_file()` - 文件保存逻辑
@@ -82,4 +66,4 @@ python main.py
 
 ## 许可证
 
-MIT License
+**???** License
